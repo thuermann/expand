@@ -1,17 +1,19 @@
+/*
+ * $Id: expand.c,v 1.2 2011/11/17 13:29:28 urs Exp $
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 
-int expand(char *name);
+static int expand(const char *name);
 
-int tab_width = 8;
+static int tab_width = 8;
 
 int main(int argc, char **argv)
 {
-	while (++argv, --argc)
-	{
+	while (++argv, --argc) {
 		if (**argv == '-')
-			switch (*++*argv)
-			{
+			switch (*++*argv) {
 			case 't':
 				tab_width = atoi(*argv + 1);
 				break;
@@ -22,10 +24,10 @@ int main(int argc, char **argv)
 			expand(*argv);
 	}
 
-	return (0);
+	return 0;
 }
 
-int expand(char *name)
+static int expand(const char *name)
 {
 	FILE *infile, *outfile;
 	char *tname;
@@ -34,34 +36,27 @@ int expand(char *name)
 	char line[256], *buf;
 
 	if (!(infile = fopen(name, "r")))
-		return (-1);
+		return -1;
 	if (!(outfile = fopen(tname = tmpnam(NULL), "w")))
-		return (-1);
+		return -1;
 
 	buf = line;
 	count = 0;
-	while ((c = fgetc(infile)) != EOF)
-	{
-		if (c == '\t')
-		{
+	while ((c = fgetc(infile)) != EOF) {
+		if (c == '\t') {
 			int i;
 
-			for (i = tab_width - count % tab_width; --i >= 0; )
-			{
+			for (i = tab_width - count % tab_width; --i >= 0; ) {
 				*buf++ = ' ';
 				count++;
 			}
-		}
-		else if (c == '\n')
-		{
+		} else if (c == '\n') {
 			*buf++ = c;
 			*buf = '\0';
 			fputs(line, outfile);
 			buf = line;
 			count = 0;
-		}
-		else
-		{
+		} else {
 			*buf++ = c;
 			count++;
 		}
@@ -73,5 +68,5 @@ int expand(char *name)
 	remove(name);
 	rename(tname, name);
 
-	return (0);
+	return 0;
 }
