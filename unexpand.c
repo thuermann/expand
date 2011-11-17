@@ -1,16 +1,16 @@
 /*
- * $Id: unexpand.c,v 1.2 2011/11/17 13:29:28 urs Exp $
+ * $Id: unexpand.c,v 1.3 2011/11/17 13:29:53 urs Exp $
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 
-static int unexpand(const char *name);
-
-static int tab_width = 8;
+static int unexpand(const char *name, int tab_width);
 
 int main(int argc, char **argv)
 {
+	int tab_width = 8;
+
 	while (++argv, --argc) {
 		if (**argv == '-')
 			switch (*++*argv) {
@@ -21,13 +21,13 @@ int main(int argc, char **argv)
 				break;
 			}
 		else
-			unexpand(*argv);
+			unexpand(*argv, tab_width);
 	}
 
 	return 0;
 }
 
-static int unexpand(const char *name)
+static int unexpand(const char *name, int tab_width)
 {
 	FILE *infile, *outfile;
 	char *tname;
