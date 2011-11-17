@@ -1,9 +1,10 @@
 /*
- * $Id: unexpand.c,v 1.5 2011/11/17 13:30:23 urs Exp $
+ * $Id: unexpand.c,v 1.6 2011/11/17 13:30:33 urs Exp $
  */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 static void usage(const char *name)
@@ -35,8 +36,11 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-	for (i = optind; i < argc; i++)
-		unexpand(argv[i]);
+	if (optind == argc)
+		unexpand("-");
+	else
+		for (i = optind; i < argc; i++)
+			unexpand(argv[i]);
 
 	return 0;
 }
@@ -49,7 +53,9 @@ static int unexpand(const char *name)
 	int spc_cnt, spc_flag;
 	char line[256], *buf;
 
-	if (!(file = fopen(name, "r"))) {
+	if (strcmp(name, "-") == 0)
+		file = stdin;
+	else if (!(file = fopen(name, "r"))) {
 		perror(name);
 		return -1;
 	}
@@ -93,7 +99,8 @@ static int unexpand(const char *name)
 		}
 	}
 
-	fclose(file);
+	if (file != stdin)
+		fclose(file);
 
 	return 0;
 }
