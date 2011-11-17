@@ -1,5 +1,5 @@
 /*
- * $Id: expand.c,v 1.4 2011/11/17 13:30:13 urs Exp $
+ * $Id: expand.c,v 1.5 2011/11/17 13:30:23 urs Exp $
  */
 
 #include <stdio.h>
@@ -48,8 +48,10 @@ static int expand(const char *name)
 	int count;
 	char line[256], *buf;
 
-	if (!(file = fopen(name, "r")))
+	if (!(file = fopen(name, "r"))) {
+		perror(name);
 		return -1;
+	}
 
 	buf = line;
 	count = 0;
