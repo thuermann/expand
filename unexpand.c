@@ -1,5 +1,5 @@
 /*
- * $Id: unexpand.c,v 1.7 2011/11/17 13:30:33 urs Exp $
+ * $Id: unexpand.c,v 1.8 2011/11/17 13:30:43 urs Exp $
  */
 
 #include <stdio.h>
@@ -50,7 +50,6 @@ static int unexpand(const char *name, int tab_width)
 	int c;
 	int count;
 	int spc_cnt, spc_flag;
-	char line[256], *buf;
 
 	if (strcmp(name, "-") == 0)
 		file = stdin;
@@ -59,7 +58,6 @@ static int unexpand(const char *name, int tab_width)
 		return -1;
 	}
 
-	buf = line;
 	count = spc_cnt = 0;
 	spc_flag = 0;
 	while ((c = fgetc(file)) != EOF) {
@@ -68,31 +66,29 @@ static int unexpand(const char *name, int tab_width)
 			spc_cnt++;
 			if (count % tab_width == 0) {
 				if (spc_cnt > 1)
-					*buf++ = '\t';
+					putchar('\t');
 				else
-					*buf++ = ' ';
+					putchar(' ');
 				spc_cnt = 0;
 			}
 		} else if (c == '\t') {
-			*buf++ = c;
+			putchar(c);
 			count += tab_width - count % tab_width;
 			spc_cnt = 0;
 		} else if (c == '\n') {
 			while (spc_cnt > 0) {
-				*buf++ = ' ';
+				putchar(' ');
 				spc_cnt--;
 			}
-			*buf = '\0';
-			puts(line);
-			buf = line;
+			putchar(c);
 			count = 0;
 			spc_flag = 0;
 		} else {
 			while (spc_cnt > 0) {
-				*buf++ = ' ';
+				putchar(' ');
 				spc_cnt--;
 			}
-			*buf++ = c;
+			putchar(c);
 			count++;
 			spc_flag = 1;
 		}
