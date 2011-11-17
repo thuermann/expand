@@ -1,9 +1,10 @@
 /*
- * $Id: expand.c,v 1.6 2011/11/17 13:30:23 urs Exp $
+ * $Id: expand.c,v 1.7 2011/11/17 13:30:33 urs Exp $
  */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 static void usage(const char *name)
@@ -34,8 +35,11 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-	for (i = optind; i < argc; i++)
-		expand(argv[i], tab_width);
+	if (optind == argc)
+		expand("-", tab_width);
+	else
+		for (i = optind; i < argc; i++)
+			expand(argv[i], tab_width);
 
 	return 0;
 }
@@ -47,7 +51,9 @@ static int expand(const char *name, int tab_width)
 	int count;
 	char line[256], *buf;
 
-	if (!(file = fopen(name, "r"))) {
+	if (strcmp(name, "-") == 0)
+		file = stdin;
+	else if (!(file = fopen(name, "r"))) {
 		perror(name);
 		return -1;
 	}
@@ -73,7 +79,8 @@ static int expand(const char *name, int tab_width)
 		}
 	}
 
-	fclose(file);
+	if (file != stdin)
+		fclose(file);
 
 	return 0;
 }
