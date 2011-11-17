@@ -1,9 +1,15 @@
 /*
- * $Id: unexpand.c,v 1.2 2011/11/17 13:29:28 urs Exp $
+ * $Id: unexpand.c,v 1.3 2011/11/17 13:30:03 urs Exp $
  */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+
+static void usage(const char *name)
+{
+	fprintf(stderr, "Usage: %s [-t width] file...\n", name);
+}
 
 static int unexpand(const char *name);
 
@@ -11,18 +17,26 @@ static int tab_width = 8;
 
 int main(int argc, char **argv)
 {
-	while (++argv, --argc) {
-		if (**argv == '-')
-			switch (*++*argv) {
-			case 't':
-				tab_width = atoi(*argv + 1);
-				break;
-			default:
-				break;
-			}
-		else
-			unexpand(*argv);
+	int errflg = 0;
+	int opt, i;
+
+	while ((opt = getopt(argc, argv, "t:")) != -1) {
+		switch (opt) {
+		case 't':
+			tab_width = atoi(optarg);
+			break;
+		default:
+			errflg = 1;
+			break;
+		}
 	}
+	if (errflg) {
+		usage(argv[0]);
+		exit(1);
+	}
+
+	for (i = optind; i < argc; i++)
+		unexpand(argv[i]);
 
 	return 0;
 }
