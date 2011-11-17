@@ -1,5 +1,5 @@
 /*
- * $Id: unexpand.c,v 1.5 2011/11/17 13:30:13 urs Exp $
+ * $Id: unexpand.c,v 1.6 2011/11/17 13:30:23 urs Exp $
  */
 
 #include <stdio.h>
@@ -48,8 +48,10 @@ static int unexpand(const char *name, int tab_width)
 	int spc_cnt, spc_flag;
 	char line[256], *buf;
 
-	if (!(file = fopen(name, "r")))
+	if (!(file = fopen(name, "r"))) {
+		perror(name);
 		return -1;
+	}
 
 	buf = line;
 	count = spc_cnt = 0;
