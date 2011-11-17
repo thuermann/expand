@@ -1,5 +1,5 @@
 /*
- * $Id: unexpand.c,v 1.3 2011/11/17 13:30:03 urs Exp $
+ * $Id: unexpand.c,v 1.4 2011/11/17 13:30:13 urs Exp $
  */
 
 #include <stdio.h>
@@ -43,22 +43,19 @@ int main(int argc, char **argv)
 
 static int unexpand(const char *name)
 {
-	FILE *infile, *outfile;
-	char *tname;
+	FILE *file;
 	int c;
 	int count;
 	int spc_cnt, spc_flag;
 	char line[256], *buf;
 
-	if (!(infile = fopen(name, "r")))
-		return -1;
-	if (!(outfile = fopen(tname = tmpnam(NULL), "w")))
+	if (!(file = fopen(name, "r")))
 		return -1;
 
 	buf = line;
 	count = spc_cnt = 0;
 	spc_flag = 0;
-	while ((c = fgetc(infile)) != EOF) {
+	while ((c = fgetc(file)) != EOF) {
 		if (c == ' ' && !spc_flag) {
 			count++;
 			spc_cnt++;
@@ -78,9 +75,8 @@ static int unexpand(const char *name)
 				*buf++ = ' ';
 				spc_cnt--;
 			}
-			*buf++ = c;
 			*buf = '\0';
-			fputs(line, outfile);
+			puts(line);
 			buf = line;
 			count = 0;
 			spc_flag = 0;
@@ -95,11 +91,7 @@ static int unexpand(const char *name)
 		}
 	}
 
-	fclose(infile);
-	fclose(outfile);
-
-	remove(name);
-	rename(tname, name);
+	fclose(file);
 
 	return 0;
 }
