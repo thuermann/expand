@@ -1,28 +1,41 @@
 /*
- * $Id: expand.c,v 1.3 2011/11/17 13:29:53 urs Exp $
+ * $Id: expand.c,v 1.4 2011/11/17 13:30:03 urs Exp $
  */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+
+static void usage(const char *name)
+{
+	fprintf(stderr, "Usage: %s [-t width] file...\n", name);
+}
 
 static int expand(const char *name, int tab_width);
 
 int main(int argc, char **argv)
 {
 	int tab_width = 8;
+	int errflg = 0;
+	int opt, i;
 
-	while (++argv, --argc) {
-		if (**argv == '-')
-			switch (*++*argv) {
-			case 't':
-				tab_width = atoi(*argv + 1);
-				break;
-			default:
-				break;
-			}
-		else
-			expand(*argv, tab_width);
+	while ((opt = getopt(argc, argv, "t:")) != -1) {
+		switch (opt) {
+		case 't':
+			tab_width = atoi(optarg);
+			break;
+		default:
+			errflg = 1;
+			break;
+		}
 	}
+	if (errflg) {
+		usage(argv[0]);
+		exit(1);
+	}
+
+	for (i = optind; i < argc; i++)
+		expand(argv[i], tab_width);
 
 	return 0;
 }
